@@ -3,25 +3,25 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using P01_2021_EC_601_2021_MG_603.Models; 
+using P01_2021_EC_601_2021_MG_603.Models;
+using P01_2021_EC_601_2021_MG_603.Data;
 
 namespace P01_2021_EC_601_2021_MG_603.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsuarioController : ControllerBase
+    public class UsuariosController : ControllerBase
     {
         private readonly parqueoContext _context;
 
-        public UsuarioController(parqueoContext context)
+        public UsuariosController(parqueoContext context)
         {
             _context = context;
         }
 
-
         // Registrar un nuevo usuario
         [HttpPost("registrar")]
-        public IActionResult RegistrarUsuario([FromBody] Usuario usuario)
+        public IActionResult RegistrarUsuario([FromBody] Usuarios usuario)
         {
             if (_context.Usuarios.Any(u => u.Correo == usuario.Correo))
             {
@@ -74,3 +74,4 @@ namespace P01_2021_EC_601_2021_MG_603.Controllers
         }
     }
 }
+
