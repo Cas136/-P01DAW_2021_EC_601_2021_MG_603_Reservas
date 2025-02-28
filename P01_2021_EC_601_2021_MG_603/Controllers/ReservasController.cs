@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using P01_2021_EC_601_2021_MG_603.Models;
 using Microsoft.EntityFrameworkCore;
-
+using P01_2021_EC_601_2021_MG_603.Data;
 
 namespace P01_2021_EC_601_2021_MG_603.Controllers
 {
