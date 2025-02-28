@@ -1,36 +1,76 @@
-﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using P01_2021_EC_601_2021_MG_603.Models;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
+using P01_2021_EC_601_2021_MG_603.Models; 
 
 namespace P01_2021_EC_601_2021_MG_603.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsuariosController : ControllerBase
+    public class UsuarioController : ControllerBase
     {
-        private readonly parqueoContext _parqueoContexto;
+        private readonly parqueoContext _context;
 
-        public UsuariosController(parqueoContext parqueoContexto)
+        public UsuarioController(parqueoContext context)
         {
-            _parqueoContexto = parqueoContexto;
+            _context = context;
         }
 
-        [HttpGet]
-        [Route("GetAll")]
-        public IActionResult Get()
+
+        // Registrar un nuevo usuario
+        [HttpPost("registrar")]
+        public IActionResult RegistrarUsuario([FromBody] Usuario usuario)
         {
-            List<Usuarios> listadoUsuarios = new List<Usuarios>();
-            foreach (Usuarios usuario in _parqueoContexto.Usuarios)
+            if (_context.Usuarios.Any(u => u.Correo == usuario.Correo))
             {
-                listadoUsuarios.Add(usuario);
+                return BadRequest("El correo ya está registrado.");
             }
 
-            if (listadoUsuarios.Count == 0)
+            usuario.Contrasena = EncriptarContrasena(usuario.Contrasena);
+            _context.Usuarios.Add(usuario);
+            _context.SaveChanges();
+            return Ok(new { mensaje = "Usuario registrado correctamente." });
+        }
+
+        // Validar credenciales de usuario
+        [HttpPost("validar")]
+        public IActionResult ValidarCredenciales([FromBody] Credenciales credenciales)
+        {
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Correo == credenciales.Correo);
+
+            if (usuario == null || !VerificarContrasena(credenciales.Contrasena, usuario.Contrasena))
             {
-                return NotFound();
+                return Unauthorized("Credenciales inválidas.");
             }
-            return Ok(listadoUsuarios);
+
+            return Ok(new { mensaje = "Credenciales válidas.", usuarioId = usuario.UsuarioId });
+        }
+
+        // Obtener todos los usuarios
+        [HttpGet]
+        public IActionResult ObtenerUsuarios()
+        {
+            var usuarios = _context.Usuarios.ToList();
+            return Ok(usuarios);
+        }
+
+        // Método para encriptar la contraseña
+        private string EncriptarContrasena(string contrasena)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(contrasena));
+                return BitConverter.ToString(hash).Replace("-", "").ToLower();
+            }
+        }
+
+        // Verificar la contraseña
+        private bool VerificarContrasena(string contrasenaIngresada, string contrasenaEncriptada)
+        {
+            string contrasenaIngresadaEncriptada = EncriptarContrasena(contrasenaIngresada);
+            return contrasenaIngresadaEncriptada == contrasenaEncriptada;
         }
     }
 }
