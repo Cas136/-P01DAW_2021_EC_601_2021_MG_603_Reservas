@@ -38,7 +38,7 @@ namespace P01_2021_EC_601_2021_MG_603.Controllers
         }
 
         [HttpPost]
-        public IActionResult CrearSucursal([FromBody] Sucursal sucursal)
+        public IActionResult CrearSucursal([FromBody] Sucursales sucursal)
         {
             _context.Sucursales.Add(sucursal);
             _context.SaveChanges();
@@ -46,7 +46,7 @@ namespace P01_2021_EC_601_2021_MG_603.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult ActualizarSucursal(int id, [FromBody] Sucursal sucursalActualizada)
+        public IActionResult ActualizarSucursal(int id, [FromBody] Sucursales sucursalActualizada)
         {
             var sucursal = _context.Sucursales.Find(id);
 
