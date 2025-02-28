@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ParqueoAPI.Controllers
+namespace P01_2021_EC_601_2021_MG_603.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
